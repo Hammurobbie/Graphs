@@ -70,26 +70,27 @@ class Graph:
                 for homie in self.get_neighbors(v):
                     s.push(homie)
 
-    def dft_recursive(self, starting_vertex):
+    def dft_recursive(self, starting_vertex, visited=None):
         """
         Print each vertex in depth-first order
         beginning from starting_vertex.
 
         This should be done using recursion.
         """
-        s = Stack()
-        s.push(starting_vertex)
-        visited = set()
 
-        while s.size() > 0:
-            v = s.pop()
+        if visited is None:
+            visited = set()
 
-            if v not in visited:
-                visited.add(v)
-                print(v)
+        visited.add(starting_vertex)
 
-                for homie in self.get_neighbors(v):
-                    s.push(homie)
+        for edge in self.vertices[starting_vertex]:
+            if edge not in visited:
+                new_path = self.dft_recursive(
+                    edge, visited)
+
+                if new_path:
+                    return visited
+        return visited
 
     def bfs(self, starting_vertex, destination_vertex):
         """
@@ -105,12 +106,14 @@ class Graph:
         while q.size() > 0:
             v = q.dequeue()
 
-            if v == destination_vertex:
-                return path
+            # if v == destination_vertex:
+            #     return path
 
             if v not in visited:
                 visited.add(v)
                 path.append(v)
+                if v == destination_vertex:
+                    return path
 
                 for homie in self.get_neighbors(v):
                     q.enqueue(homie)
@@ -141,7 +144,7 @@ class Graph:
                 for homie in self.get_neighbors(v):
                     s.push(homie)
 
-    def dfs_recursive(self, starting_vertex, destination_vertex):
+    def dfs_recursive(self, starting_vertex, destination_vertex, visited=None, path=None):
         """
         Return a list containing a path from
         starting_vertex to destination_vertex in
@@ -149,7 +152,27 @@ class Graph:
 
         This should be done using recursion.
         """
-        pass  # TODO
+
+        if visited is None:
+            visited = set()
+
+        if path is None:
+            path = []
+
+        visited.add(starting_vertex)
+        path = path + [starting_vertex]
+
+        if starting_vertex == destination_vertex:
+            return path
+
+        for edge in self.vertices[starting_vertex]:
+            if edge not in visited:
+                new_path = self.dfs_recursive(
+                    edge, destination_vertex, visited, path)
+
+                if new_path:
+                    return new_path
+        return None
 
 
 if __name__ == '__main__':
@@ -209,8 +232,10 @@ if __name__ == '__main__':
     '''
 
     graph.dft(1)
-    graph.dft_recursive(1)
+
     print("DFT Recursion")
+
+    graph.dft_recursive(1)
 
     '''
     Valid BFS path:
@@ -230,4 +255,7 @@ if __name__ == '__main__':
     print("DFS Path")
 
     print(graph.dfs(1, 6))
+
+    print("DFS Recursive")
+
     print(graph.dfs_recursive(1, 6))
