@@ -82,15 +82,11 @@ class Graph:
             visited = set()
 
         visited.add(starting_vertex)
+        print(starting_vertex)
 
         for edge in self.vertices[starting_vertex]:
             if edge not in visited:
-                new_path = self.dft_recursive(
-                    edge, visited)
-
-                if new_path:
-                    return visited
-        return visited
+                self.dft_recursive(edge, visited)
 
     def bfs(self, starting_vertex, destination_vertex):
         """
@@ -99,24 +95,25 @@ class Graph:
         breath-first order.
         """
         q = Queue()
-        q.enqueue(starting_vertex)
+        q.enqueue([starting_vertex])
         visited = set()
         path = []
 
         while q.size() > 0:
             v = q.dequeue()
+            cur_node = v[-1]
 
-            # if v == destination_vertex:
-            #     return path
+            if cur_node == destination_vertex:
+                return v
 
-            if v not in visited:
-                visited.add(v)
-                path.append(v)
-                if v == destination_vertex:
-                    return path
+            else:
+                if cur_node not in visited:
+                    visited.add(cur_node)
 
-                for homie in self.get_neighbors(v):
-                    q.enqueue(homie)
+                for homie in self.get_neighbors(cur_node):
+                    path_copy = list(v)
+                    path_copy.append(homie)
+                    q.enqueue(path_copy)
 
     def dfs(self, starting_vertex, destination_vertex):
         """
